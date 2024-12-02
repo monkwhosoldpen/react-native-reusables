@@ -1,6 +1,6 @@
-import { Goat, GoatCategory } from '~/types/goat';
+import { Goat, GoatType } from '~/types/goat';
 import { Message, Chat } from '~/types/message';
-import { goats as mockGoats, goatCategories as mockCategories } from '~/data/mock-goats';
+import { MOCK_GOATS } from '~/data/mock-goats';
 
 // You can replace this with actual API calls later
 const SIMULATE_NETWORK_DELAY = 800;
@@ -8,7 +8,7 @@ const SIMULATE_NETWORK_DELAY = 800;
 const mockMessages: Record<string, Chat> = {};
 
 // Generate mock messages for each goat
-mockGoats.forEach(goat => {
+MOCK_GOATS.forEach((goat: Goat) => {
   const numberOfMessages = 5 + Math.floor(Math.random() * 15); // 5-20 messages
   const messages: Message[] = [];
   
@@ -39,7 +39,7 @@ mockGoats.forEach(goat => {
 
 function getRandomGoatMessage(goat: Goat): string {
   const messages = [
-    `I'm a ${goat.category === '1' ? 'dairy' : goat.category === '2' ? 'meat' : goat.category === '3' ? 'pet' : 'show'} goat!`,
+    `I'm a ${goat.category} goat!`,
     'Baaaaa! 🐐',
     'Would you like to see my certifications?',
     `My price is ${goat.price.toLocaleString()} dollars`,
@@ -71,7 +71,7 @@ function getRandomUserMessage(): string {
 
 export class GoatService {
   static async getGoats(params?: { 
-    category?: string;
+    category?: GoatType;
     page?: number;
     limit?: number;
   }): Promise<{ 
@@ -82,10 +82,10 @@ export class GoatService {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, SIMULATE_NETWORK_DELAY));
 
-    let filteredGoats = [...mockGoats];
+    let filteredGoats = [...MOCK_GOATS];
     
     // Apply category filter
-    if (params?.category) {
+    if (params?.category && params.category !== 'all') {
       filteredGoats = filteredGoats.filter(goat => goat.category === params.category);
     }
 
@@ -102,15 +102,10 @@ export class GoatService {
     };
   }
 
-  static async getCategories(): Promise<GoatCategory[]> {
-    await new Promise(resolve => setTimeout(resolve, SIMULATE_NETWORK_DELAY));
-    return mockCategories;
-  }
-
   static async getGoatByUsername(username: string): Promise<Goat | null> {
     await new Promise(resolve => setTimeout(resolve, SIMULATE_NETWORK_DELAY));
     
-    const goat = mockGoats.find(g => g.username === username);
+    const goat = MOCK_GOATS.find((g: Goat) => g.username === username);
     if (!goat) {
       throw new Error(`Goat with username ${username} not found`);
     }

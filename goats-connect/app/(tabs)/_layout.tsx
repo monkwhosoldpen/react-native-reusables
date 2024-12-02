@@ -2,8 +2,8 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/lib/constants';
-import { UserMenu } from '~/components/UserMenu';
 import { View } from 'react-native';
+import { Text } from '~/components/ui/text';
 
 export default function TabsLayout() {
   const { isDarkColorScheme } = useColorScheme();
@@ -19,11 +19,7 @@ export default function TabsLayout() {
           backgroundColor: isDarkColorScheme ? NAV_THEME.dark.background : NAV_THEME.light.background,
         },
         headerTintColor: isDarkColorScheme ? NAV_THEME.dark.text : NAV_THEME.light.text,
-        headerRight: () => (
-          <View className="mr-4">
-            <UserMenu />
-          </View>
-        ),
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="home"
@@ -47,6 +43,28 @@ export default function TabsLayout() {
         name="chats"
         options={{
           title: 'Chats',
+          headerShown: true,
+          header: ({ options }) => (
+            <View 
+              className="px-4 py-3 border-b border-border"
+              style={{ 
+                backgroundColor: isDarkColorScheme ? NAV_THEME.dark.background : NAV_THEME.light.background 
+              }}
+            >
+              <View className="flex-row items-center justify-between">
+                <Text className="text-lg font-semibold">
+                  {options.title}
+                </Text>
+                <View className="flex-row items-center gap-4">
+                  <Ionicons 
+                    name="create" 
+                    size={24} 
+                    color={isDarkColorScheme ? NAV_THEME.dark.text : NAV_THEME.light.text} 
+                  />
+                </View>
+              </View>
+            </View>
+          ),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles" size={size} color={color} />
           ),

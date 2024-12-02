@@ -1,14 +1,17 @@
 export type GoatCategory = {
   id: string;
-  name: string;
+  value: 'all' | 'dairy' | 'meat' | 'fiber' | 'pet';
+  label: string;
 };
+
+export type GoatType = 'all' | 'dairy' | 'meat' | 'fiber' | 'pet';
 
 export type Goat = {
   id: string;
   name: string;
   username: string;
-  image: string;
-  category: string;
-  price: number;
   description: string;
+  image: string;
+  price: number;
+  category: GoatType;
 }; 

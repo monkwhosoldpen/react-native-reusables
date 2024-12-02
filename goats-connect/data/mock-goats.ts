@@ -1,62 +1,106 @@
-import { Goat, GoatCategory } from '~/types/goat';
+import { Goat, GoatType } from '~/types/goat';
 
-export const goatCategories: GoatCategory[] = [
-  { id: '1', name: 'Dairy' },
-  { id: '2', name: 'Meat' },
-  { id: '3', name: 'Pet' },
-  { id: '4', name: 'Show' },
-];
+type BreedRecord = Record<Exclude<GoatType, 'all'>, string[]>;
+type DescriptionRecord = Record<Exclude<GoatType, 'all'>, string[]>;
 
-const goatNames = [
-  'Alpine', 'Nubian', 'Saanen', 'Boer', 'Angora', 'Pygmy', 'Nigerian Dwarf',
-  'LaMancha', 'Kiko', 'Spanish', 'Toggenburg', 'Oberhasli', 'Cashmere', 'Kinder',
-  'Golden Guernsey'
-];
+const goatBreeds: BreedRecord = {
+  dairy: [
+    'Alpine', 'Nubian', 'Saanen', 'LaMancha', 'Oberhasli', 'Toggenburg', 'Nigerian Dwarf',
+    'Sable', 'Golden Guernsey', 'British Alpine'
+  ],
+  meat: [
+    'Boer', 'Kiko', 'Spanish', 'Myotonic', 'Savanna', 'Black Bengal', 'Red Kalahari',
+    'Rangeland', 'Texmaster', 'Kalahari Red'
+  ],
+  fiber: [
+    'Angora', 'Cashmere', 'Pygora', 'Nigora', 'Kashmir', 'Australian Cashmere', 
+    'Don', 'Soviet Mohair', 'Tennessee Fainting', 'Uzbek Black'
+  ],
+  pet: [
+    'Pygmy', 'Mini Silky', 'Kinder', 'Mini Nubian', 'African Pygmy', 'Australian Miniature',
+    'Mini LaMancha', 'Dwarf Nigerian', 'Mini Alpine', 'Mini Oberhasli'
+  ]
+};
 
-const descriptions = [
-  'A great dairy goat breed',
-  'Perfect for meat production',
-  'Excellent show goat',
-  'Friendly pet goat',
-  'High milk producer',
-  'Award-winning bloodline',
-  'Great for beginners',
-  'Show quality breed',
-];
+const descriptions: DescriptionRecord = {
+  dairy: [
+    'Excellent milk producer with high butterfat content',
+    'Consistent dairy producer with great temperament',
+    'Award-winning dairy lineage',
+    'Perfect for small-scale dairy production',
+    'High-yielding milk goat with excellent genetics'
+  ],
+  meat: [
+    'Fast-growing meat breed with excellent confirmation',
+    'Premium meat goat with superior genetics',
+    'Ideal for commercial meat production',
+    'High-quality meat producer with good feed conversion',
+    'Muscular build with excellent meat-to-bone ratio'
+  ],
+  fiber: [
+    'Produces high-quality fiber with excellent staple length',
+    'Premium fiber producer with consistent yields',
+    'Known for soft, luxurious fiber production',
+    'Excellent fiber characteristics and yield',
+    'Superior fiber quality with great handling'
+  ],
+  pet: [
+    'Friendly temperament, perfect for families',
+    'Great companion animal with loving personality',
+    'Gentle nature, ideal for children',
+    'Well-socialized and easy to handle',
+    'Perfect backyard companion'
+  ]
+};
 
 function getRandomElement<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-function getRandomColor(): string {
-  const colors = ['4287f5', 'f54242', '42f554', 'f542f5', 'f5d442', '42f5f5'];
-  return getRandomElement(colors);
+function generatePrice(category: Exclude<GoatType, 'all'>): number {
+  const basePrice = {
+    dairy: 800,
+    meat: 600,
+    fiber: 700,
+    pet: 400,
+  }[category];
+
+  const variation = basePrice * 0.3;
+  return Math.floor(basePrice + (Math.random() * variation * 2 - variation));
 }
 
-function getRandomPrice(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+function generateUsername(breed: string, index: number): string {
+  const prefix = breed.toLowerCase().replace(/\s+/g, '_');
+  const randomNum = Math.floor(Math.random() * 1000);
+  return `${prefix}_${randomNum}_${index}`;
 }
 
-function generateUsername(name: string, index: number): string {
-  return `${name}`;
-}
-
-export const goats: Goat[] = Array.from({ length: 100 }, (_, index) => {
-  const categoryId = getRandomElement(goatCategories).id;
-  const basePrice = categoryId === '1' ? 500 : 
-                   categoryId === '2' ? 400 :
-                   categoryId === '3' ? 300 :
-                   600; // Show goats are more expensive
-  
-  const name = `${getRandomElement(goatNames)} #${index + 1}`;
+function generateGoat(category: Exclude<GoatType, 'all'>, id: number): Goat {
+  const breed = getRandomElement(goatBreeds[category]);
+  const description = getRandomElement(descriptions[category]);
 
   return {
-    id: (index + 1).toString(),
-    name,
-    username: generateUsername((index + 1).toString(), index + 1),
-    image: `https://placehold.co/400x300/${getRandomColor()}/ffffff?text=Goat+${index + 1}`,
-    category: categoryId,
-    price: getRandomPrice(basePrice, basePrice + 300),
-    description: getRandomElement(descriptions),
+    id: id.toString(),
+    name: `${breed} #${id}`,
+    username: generateUsername(breed, id),
+    description,
+    image: `https://picsum.photos/seed/goat${id}/400/400`,
+    price: generatePrice(category),
+    category
   };
-}); 
+}
+
+export const MOCK_GOATS: Goat[] = [];
+
+// Generate 500 goats for each category
+(['dairy', 'meat', 'fiber', 'pet'] as const).forEach(category => {
+  for (let i = 0; i < 500; i++) {
+    MOCK_GOATS.push(generateGoat(category, MOCK_GOATS.length + 1));
+  }
+});
+
+// Shuffle the array
+for (let i = MOCK_GOATS.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [MOCK_GOATS[i], MOCK_GOATS[j]] = [MOCK_GOATS[j], MOCK_GOATS[i]];
+} 

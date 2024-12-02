@@ -16,3 +16,13 @@ export const NAV_THEME = {
     text: 'hsl(0 0% 98%)', // foreground
   },
 };
+
+import { Goat, GoatCategory } from '~/types/goat';
+
+export const GOAT_CATEGORIES: GoatCategory[] = [
+  { id: 'all', value: 'all', label: 'All Goats' },
+  { id: 'dairy', value: 'dairy', label: 'Dairy Goats' },
+  { id: 'meat', value: 'meat', label: 'Meat Goats' },
+  { id: 'fiber', value: 'fiber', label: 'Fiber Goats' },
+  { id: 'pet', value: 'pet', label: 'Pet Goats' },
+];

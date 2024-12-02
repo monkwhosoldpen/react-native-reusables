@@ -11,14 +11,15 @@ type GoatGridProps = {
 export function GoatGrid({ goats, onGoatPress }: GoatGridProps) {
   const { width: windowWidth } = useWindowDimensions();
   const padding = 16;
+  const gap = 8;
   
-  // Calculate columns based on screen width
-  const columns = windowWidth < 640 ? 1 : 
-                 windowWidth < 1024 ? 2 :
-                 windowWidth < 1536 ? 3 : 4;
+  // Show more columns
+  const columns = windowWidth < 640 ? 3 : // 3 columns on phones
+                 windowWidth < 1024 ? 4 : // 4 columns on tablets
+                 windowWidth < 1536 ? 5 : // 5 columns on small desktop
+                 6; // 6 columns on large screens
 
-  // Calculate gaps and content width
-  const gap = 16;
+  // Calculate card width
   const totalGaps = columns - 1;
   const availableWidth = windowWidth - (padding * 2) - (totalGaps * gap);
   const cardWidth = availableWidth / columns;
@@ -34,9 +35,16 @@ export function GoatGrid({ goats, onGoatPress }: GoatGridProps) {
 
   return (
     <View className="px-4">
-      <View className="flex-row" style={{ gap }}>
+      <View 
+        className="flex-row" 
+        style={{ 
+          gap,
+          paddingTop: 4,
+          paddingBottom: 16
+        }}
+      >
         {columnedGoats.map((column, colIndex) => (
-          <View key={colIndex} style={{ flex: 1 }}>
+          <View key={colIndex} style={{ flex: 1, gap }}>
             {column.map((goat) => (
               <GoatCard
                 key={goat.id}

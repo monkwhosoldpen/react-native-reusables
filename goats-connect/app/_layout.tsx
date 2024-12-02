@@ -5,15 +5,17 @@ import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { Platform, Image, View } from 'react-native';
+import { Platform, View, Image, ImageErrorEventData, NativeSyntheticEvent } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Providers } from '~/components/Providers';
+import { UserMenu } from '~/components/UserMenu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
+import { ChevronDown } from '~/lib/icons/ChevronDown';
+import { HeaderContent } from '~/components/HeaderContent';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -62,11 +64,8 @@ export default function RootLayout() {
       console.log('Splash screen ending...');
       SplashScreen.hideAsync();
 
-      // Show first image for 5 seconds
       setTimeout(() => {
         setSplashState('second');
-
-        // Show second image for 5 seconds
         setTimeout(() => {
           setSplashState('done');
         }, 500);
@@ -78,6 +77,14 @@ export default function RootLayout() {
     return null;
   }
 
+  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+    console.error('Image loading error:', e.nativeEvent.error);
+  };
+
+  const handleImageLoad = () => {
+    console.log('Image loaded successfully');
+  };
+
   if (splashState === 'first') {
     return (
       <View style={{ flex: 1, backgroundColor: isDarkColorScheme ? '#000' : '#fff' }}>
@@ -85,8 +92,8 @@ export default function RootLayout() {
           source={{ uri: 'https://placehold.co/600x400/png?text=First+Image' }}
           style={{ width: '100%', height: '100%' }}
           resizeMode="contain"
-          onError={(e) => console.error('Image loading error:', e.nativeEvent.error)}
-          onLoad={() => console.log('Image loaded successfully')}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
         />
       </View>
     );
@@ -99,8 +106,8 @@ export default function RootLayout() {
           source={{ uri: 'https://placehold.co/600x400/png?text=Second+Image' }}
           style={{ width: '100%', height: '100%' }}
           resizeMode="contain"
-          onError={(e) => console.error('Image loading error:', e.nativeEvent.error)}
-          onLoad={() => console.log('Image loaded successfully')}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
         />
       </View>
     );
@@ -110,12 +117,16 @@ export default function RootLayout() {
     <Providers>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-        <Stack>
+        <Stack
+          screenOptions={{
+            headerRight: () => <HeaderContent />,
+          }}
+        >
           <Stack.Screen
-            name='(tabs)'
+            name="(tabs)"
             options={{
-              title: 'Starter Base',
-              headerRight: () => <ThemeToggle />,
+              title: 'Goats Connect',
+              headerShown: true,
             }}
           />
         </Stack>
